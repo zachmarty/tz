@@ -1,2 +1,3 @@
-# tz
-tz
+admin panel:
+log admin
+pass admin
