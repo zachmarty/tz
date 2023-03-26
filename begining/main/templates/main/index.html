@@ -1,0 +1,45 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static  'main/css/style.css' %}">
+</head>
+<body>
+
+<div class="main_block" id="main_block"></div>
+
+<template id = 'blocks'>
+    <div class="small_block"></div>
+</template>
+
+<script>
+const main_block = document.querySelector('#main_block');
+const t = document.querySelector('#blocks');
+const names = {{ names|safe }};
+
+const menus = {{ menus|safe }};
+
+for (let i=0; i<menus.length; i++){
+    let el = t.content.cloneNode(true);
+    let name = names[i]
+    let a = document.createElement('a');
+    a.innerText = name;
+    let local = '/' + name;
+    a.getAttribute("href");
+    a.setAttribute("href", local);
+    a.classList.add('untagged');
+    let div = el.querySelector('div');
+    div.append(a);
+    main_block.append(el);
+}
+
+</script>
+
+
+</body>
+</html>

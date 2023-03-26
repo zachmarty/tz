@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static  'main/css/style.css' %}">
+</head>
+<body>
+    <div class="main_block" id="main_block"></div>
+
+    <template id = 'blocks'>
+        <div class="small_block"></div>
+    </template>
+    <script>
+    function pick_fields(layer, name, fields){
+    let layed_fields = [];
+    let parent = null;
+    for (let i=0; i<fields.length; i++){
+        if (fields[i].name == name) {parent = fields[i].parent_field_id;}
+        if (fields[i].layer == layer) {layed_fields.push(fields[i]);}
+    }
+    let output = [];
+    for (let i=0; i<layed_fields.length; i++){
+        if (layed_fields[i].parent_field_id == parent) {output.push(layed_fields[i]);}
+    }
+    return output;
+}
+
+
+function get_layer(fields, layer){
+    let output=[];
+    for (let i=0; i<fields.length; i++){
+        if (fields[i].layer == layer) {output.push(fields[i]);}
+    }
+    return output;
+}
+
+function get_childs(parent, fields){
+    let output =[];
+    for (let i=0; i<fields.length; i++){
+        if (fields[i].parent_field_id == parent.id) {output.push(fields[i]);}
+    }
+    return output;
+}
+
+
+
+const main_block = document.querySelector('#main_block');
+const t = document.querySelector('#blocks');
+const names = {{ names|safe }};
+
+const fields = {{ fields|safe }};
+
+let layer = 1;
+let path = '/{{ menu }}';
+
+while (layer<=names.length){
+    let el = t.content.cloneNode(true);
+    let name = names[layer - 1];
+    let correct = pick_fields(layer, name, fields);
+    for (let i=0; i<correct.length; i++){
+        let a = document.createElement('a');
+        a.innerText = correct[i].name;
+        let local = path + '/' + correct[i].name;
+        a.getAttribute("href");
+        a.setAttribute("href", local);
+        if (correct[i].name == name){
+            a.classList.add('tagged');
+        } else{
+            a.classList.add('untagged');
+        }
+        let div = el.querySelector('div');
+        div.append(a);
+    }
+    path +='/' + name;
+    layer++;
+    main_block.append(el);
+}
+
+if (names.length <1){
+    let correct = get_layer(fields, 1);
+    let el = t.content.cloneNode(true);
+    for (let i=0; i<correct.length; i++){
+        let a = document.createElement('a');
+        a.innerText = correct[i].name;
+        let local = '/'+ '{{ menu }}' + '/' + correct[i].name;
+        a.getAttribute("href");
+        a.setAttribute("href", local);
+        a.classList.add('untagged');
+        let div = el.querySelector('div');
+        div.append(a);
+    }
+    main_block.append(el);
+} else {
+    let el = t.content.cloneNode(true);
+    let name = names[layer-2];
+    let parent = null;
+    for (let i=0; i<fields.length; i++){
+        if (fields[i].name == name) {parent = fields[i];}
+    }
+    let correct = get_childs(parent, fields);
+    for (let i=0; i<correct.length; i++){
+        let a = document.createElement('a');
+        a.innerText = correct[i].name;
+        let local = path + '/' + correct[i].name;
+        a.getAttribute("href");
+        a.setAttribute("href", local);
+        a.classList.add('untagged');
+        let div = el.querySelector('div');
+        div.append(a);
+    }
+    main_block.append(el);
+}
+
+    </script>
+</body>
+</html>
